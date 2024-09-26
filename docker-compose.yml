@@ -1,8 +1,15 @@
 version: "3.9"
 services:
-  database:
-    image: postgres:15-alpine
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: arnaud
+      POSTGRES_PASSWORD: arnaud
+      POSTGRES_DB: ats_dev
     ports:
       - "5432:5432"
-    environment:
-      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

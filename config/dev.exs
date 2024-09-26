@@ -2,11 +2,12 @@ import Config
 
 # Configure your database
 config :ats, Ats.Repo,
-  username: "postgres",
-  password: "postgres",
+  username: "arnaud",
+  password: "arnaud",
   hostname: "localhost",
   database: "ats_dev",
   stacktrace: true,
+  port: 5432,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
 
