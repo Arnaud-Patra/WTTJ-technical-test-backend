@@ -2,6 +2,23 @@
   Listing Jobs
 </.header>
 
+<div class="bg-gray-100 p-4 mb-6 rounded-lg">
+  <.form :let={f} for={%{}} method="get" action={~p"/jobs"} class="flex items-center space-x-4">
+    <div class="flex-grow">
+      <.input field={f[:title]} type="text" placeholder="Job Title" class="w-full" />
+    </div>
+    <div>
+      <.input field={f[:office]} type="select" options={["", "Office A", "Office B"]} prompt="Office" class="w-full" />
+    </div>
+    <div>
+      <.input field={f[:work_mode]} type="select" options={["Remote", "On-site", "Hybrid"]} prompt="Work Mode" class="w-full" />
+    </div>
+    <div>
+      <.button type="submit" class="w-full">Filter</.button>
+    </div>
+  </.form>
+</div>
+
 <.table id="jobs" rows={@jobs}>
   <:col :let={job} label="Title"><%= job.title %></:col>
   <:col :let={job} label="Profession"><%= Ats.Jobs.profession_name(job) %></:col>

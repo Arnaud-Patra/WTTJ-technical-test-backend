@@ -53,9 +53,30 @@ defmodule Ats.Jobs do
       [%Job{}, ...]
 
   """
-  def list_jobs do
-    Repo.all(Job) |> Repo.preload(:profession)
+  def list_jobs(params \\ %{}) do
+    Job
+    # |> filter_by_title(params["title"])
+    |> filter_by_office(params["office"])
+    |> filter_by_work_mode(params["work_mode"])
+    |> Repo.all()
+    |> Repo.preload(:profession)  # Uncomment if you need profession data
   end
+
+  defp filter_by_title(query, title) when is_binary(title) and title != "" do
+    where(query, [j], ilike(j.title, ^"%#{title}%"))
+  end
+  defp filter_by_title(query, _), do: query
+
+  defp filter_by_office(query, office) when is_binary(office) and office != "" do
+    where(query, [j], ilike(j.office, ^"%#{office}%"))
+  end
+  defp filter_by_office(query, _), do: query
+
+  defp filter_by_work_mode(query, work_mode) when is_binary(work_mode) and work_mode not in ["", "any"] do
+    work_mode_atom = String.to_existing_atom(String.downcase(work_mode))
+    where(query, [j], j.work_mode == ^work_mode_atom)
+  end
+  defp filter_by_work_mode(query, _), do: query
 
   @doc """
   Gets a single job.

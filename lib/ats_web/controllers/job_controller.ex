@@ -9,8 +9,8 @@ defmodule AtsWeb.JobController do
     render(conn, :job_list, jobs: jobs)
   end
 
-  def index(conn, _params) do
-    jobs = Jobs.list_jobs()
+  def index(conn, params) do
+    jobs = Jobs.list_jobs(params)
     render(conn, :index, jobs: jobs)
   end
 
