@@ -10,9 +10,10 @@ defmodule AtsWeb.JobController do
   end
 
   def index(conn, params) do
-    jobs = Jobs.list_jobs(params)
+    is_authenticated = not is_nil(conn.assigns.current_user)
+    jobs = Jobs.list_jobs(params, is_authenticated)
     office_options = Jobs.list_offices()
-    render(conn, :index, jobs: jobs, office_options: office_options)
+    render(conn, :index, jobs: jobs, office_options: office_options, is_authenticated: is_authenticated)
   end
 
   def new(conn, _params) do

@@ -51,14 +51,22 @@ defmodule Ats.Jobs do
       iex> list_jobs(%{"title" => "Software Engineer", "office" => "Paris", "work_mode" => "remote"})
       [%Job{}, ...]
   """
-  def list_jobs(params \\ %{}) do
+  def list_jobs(params \\ %{}, is_authenticated \\ false) do
+    IO.inspect(is_authenticated, label: "is_authenticated ???")
+
     Job
     |> filter_by_title(params["title"])
     |> filter_by_office(params["office"])
     |> filter_by_work_mode(params["work_mode"])
     |> filter_by_contract_type(params["contract_type"])
+    |> filter_by_authentication(is_authenticated)
     |> Repo.all()
     |> Repo.preload(:profession)
+  end
+
+  defp filter_by_authentication(query, true), do: query
+  defp filter_by_authentication(query, false) do
+    where(query, [j], j.status == :published)
   end
 
   defp filter_by_title(query, title) when is_binary(title) and title != "" do
