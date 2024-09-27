@@ -8,10 +8,13 @@
       <.input field={f[:title]} type="text" placeholder="Job Title" class="w-full" />
     </div>
     <div>
-      <.input field={f[:office]} type="select" options={["", "Office A", "Office B"]} prompt="Office" class="w-full" />
+      <.input field={f[:contract_type]} type="select" options={["any", "full_time", "part_time", "temporary", "freelance", "internship", "apprenticeship", "vie"]} prompt="Contract Type" class="w-full" />
     </div>
     <div>
-      <.input field={f[:work_mode]} type="select" options={["Remote", "On-site", "Hybrid"]} prompt="Work Mode" class="w-full" />
+      <.input field={f[:office]} type="select" options={["any" | @office_options]} prompt="Office" class="w-full" />
+    </div>
+    <div>
+      <.input field={f[:work_mode]} type="select" options={["any", "remote", "onsite", "hybrid"]} prompt="Work Mode" class="w-full" />
     </div>
     <div>
       <.button type="submit" class="w-full">Filter</.button>

@@ -45,27 +45,39 @@ defmodule Ats.Jobs do
   def profession_name(_job), do: ""
 
   @doc """
-  Returns the list of jobs.
-
+  Returns the list of jobs. The user can filter the jobs by title, office and work mode.
+  By default, all jobs are returned.
   ## Examples
 
-      iex> list_jobs()
+      iex> list_jobs(%{"title" => "Software Engineer", "office" => "Paris", "work_mode" => "remote"})
       [%Job{}, ...]
-
   """
   def list_jobs(params \\ %{}) do
     Job
-    # |> filter_by_title(params["title"])
+    |> filter_by_title(params["title"])
     |> filter_by_office(params["office"])
     |> filter_by_work_mode(params["work_mode"])
+    # |> filter_by_contract_type(params["contract_type"])
     |> Repo.all()
-    |> Repo.preload(:profession)  # Uncomment if you need profession data
+    |> Repo.preload(:profession)
   end
 
   defp filter_by_title(query, title) when is_binary(title) and title != "" do
     where(query, [j], ilike(j.title, ^"%#{title}%"))
   end
   defp filter_by_title(query, _), do: query
+
+  @doc """
+  Returns the list of unique offices
+  ## Examples
+
+      iex> list_offices()
+      ["Paris", "London", "Berlin", ...]
+
+  """
+  def list_offices do
+    Ats.Repo.all(from j in Ats.Jobs.Job, distinct: true, select: j.office)
+  end
 
   defp filter_by_office(query, office) when is_binary(office) and office != "" do
     where(query, [j], ilike(j.office, ^"%#{office}%"))

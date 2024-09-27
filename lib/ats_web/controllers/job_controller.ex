@@ -10,8 +10,11 @@ defmodule AtsWeb.JobController do
   end
 
   def index(conn, params) do
+    contract_type = params["contract_type"]
     jobs = Jobs.list_jobs(params)
-    render(conn, :index, jobs: jobs)
+    office_options = Jobs.list_offices()
+    # contract_type_options = Jobs.list_contract_types()
+    render(conn, :index, jobs: jobs, office_options: office_options, selected_contract_type: contract_type)
   end
 
   def new(conn, _params) do
