@@ -2,6 +2,10 @@ defmodule Ats.Jobs.Job do
   use Ecto.Schema
   import Ecto.Changeset
 
+  # Make this public
+  @contract_types [:FULL_TIME, :PART_TIME, :TEMPORARY, :FREELANCE, :INTERNSHIP, :APPRENTICESHIP, :VIE]
+
+
   schema "jobs" do
     field :title, :string
     field :description, :string
@@ -36,4 +40,6 @@ defmodule Ats.Jobs.Job do
     ])
     |> validate_required([:title, :office, :contract_type])
   end
+
+  def contract_types, do: @contract_types
 end

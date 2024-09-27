@@ -5,7 +5,6 @@ defmodule Ats.Jobs do
 
   import Ecto.Query, warn: false
   alias Ats.Repo
-
   alias Ats.Jobs.Job
   alias Ats.Professions.Profession
 
@@ -57,7 +56,7 @@ defmodule Ats.Jobs do
     |> filter_by_title(params["title"])
     |> filter_by_office(params["office"])
     |> filter_by_work_mode(params["work_mode"])
-    # |> filter_by_contract_type(params["contract_type"])
+    |> filter_by_contract_type(params["contract_type"])
     |> Repo.all()
     |> Repo.preload(:profession)
   end
@@ -90,6 +89,20 @@ defmodule Ats.Jobs do
   end
   defp filter_by_work_mode(query, _), do: query
 
+
+  defp filter_by_contract_type(query, nil), do: query
+  defp filter_by_contract_type(query, contract_type) when is_binary(contract_type) do
+    contract_type_atom = String.to_existing_atom(contract_type)
+
+    if contract_type_atom in Job.contract_types() do
+      where(query, [j], j.contract_type == ^contract_type_atom)
+    else
+      query
+    end
+  end
+  defp filter_by_contract_type(query, _), do: query  # Invalid contract type, return unfiltered query
+
+  @spec get_job!(any()) :: nil | [%{optional(atom()) => any()}] | %{optional(atom()) => any()}
   @doc """
   Gets a single job.
 
