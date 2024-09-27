@@ -52,8 +52,6 @@ defmodule Ats.Jobs do
       [%Job{}, ...]
   """
   def list_jobs(params \\ %{}, is_authenticated \\ false) do
-    IO.inspect(is_authenticated, label: "is_authenticated ???")
-
     Job
     |> filter_by_title(params["title"])
     |> filter_by_office(params["office"])

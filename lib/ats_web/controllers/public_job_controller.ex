@@ -5,9 +5,8 @@ defmodule AtsWeb.PublicJobController do
   alias Ats.Jobs.Job
 
   def index(conn, _params) do
-    jobs = Jobs.list_jobs()
-    # is_authenticated = False  # could be False by default
     is_authenticated = not is_nil(conn.assigns.current_user)
+    jobs = Jobs.list_jobs(conn.params, is_authenticated)
     office_options = Jobs.list_offices()
     render(conn, :index, jobs: jobs, office_options: office_options, is_authenticated: is_authenticated)
   end
