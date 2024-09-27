@@ -2,6 +2,92 @@ defmodule Ats.JobsTest do
   use Ats.DataCase
 
   alias Ats.Jobs
+  alias Ats.Jobs.Job
+  alias Ats.Professions.Profession
+  alias Ats.Professions
+
+  describe "list_jobs/2" do
+    setup do
+      {:ok, profession} = Professions.create_profession(%{
+        name: "Software Engineer",
+        category_name: "Technology"
+      })
+
+      {:ok, _job1} = Jobs.create_job(%{
+        title: "Senior Developer",
+        office: "New York",
+        work_mode: :remote,
+        contract_type: :FULL_TIME,
+        status: :published,
+        profession_id: profession.id
+      })
+      {:ok, _job2} = Jobs.create_job(%{
+        title: "Junior Developer",
+        office: "London",
+        work_mode: :onsite,  # Changed from :on_site to :onsite
+        contract_type: :PART_TIME,
+        status: :published,
+        profession_id: profession.id
+      })
+      {:ok, _job3} = Jobs.create_job(%{
+        title: "DevOps Engineer",
+        office: "Berlin",
+        work_mode: :hybrid,
+        contract_type: :FULL_TIME,
+        status: :draft,
+        profession_id: profession.id
+      })
+
+      :ok
+    end
+
+    test "list_jobs/2 returns all published jobs when not authenticated" do
+      jobs = Jobs.list_jobs()
+      assert length(jobs) == 2
+      assert Enum.all?(jobs, & &1.status == :published)
+    end
+
+    test "list_jobs/2 returns all jobs when authenticated" do
+      jobs = Jobs.list_jobs(%{}, true)
+      assert length(jobs) == 3
+    end
+
+    test "list_jobs/2 filters by title" do
+      jobs = Jobs.list_jobs(%{"title" => "Senior"})
+      assert length(jobs) == 1
+      assert hd(jobs).title == "Senior Developer"
+    end
+
+    test "list_jobs/2 filters by office" do
+      jobs = Jobs.list_jobs(%{"office" => "London"})
+      assert length(jobs) == 1
+      assert hd(jobs).office == "London"
+    end
+
+    test "list_jobs/2 filters by work_mode" do
+      jobs = Jobs.list_jobs(%{"work_mode" => "remote"})
+      assert length(jobs) == 1
+      assert hd(jobs).work_mode == :remote
+    end
+
+    test "list_jobs/2 filters by contract_type" do
+      jobs = Jobs.list_jobs(%{"contract_type" => "PART_TIME"})
+      assert length(jobs) == 1
+      assert hd(jobs).contract_type == :PART_TIME
+    end
+
+    test "list_jobs/2 applies multiple filters" do
+      jobs = Jobs.list_jobs(%{"title" => "Developer", "work_mode" => "onsite"})
+      assert length(jobs) == 1
+      assert hd(jobs).title == "Junior Developer"
+      assert hd(jobs).work_mode == :onsite
+    end
+
+    test "list_jobs/2 returns empty list for non-matching filters" do
+      jobs = Jobs.list_jobs(%{"title" => "Non-existent Job"})
+      assert jobs == []
+    end
+  end
 
   describe "jobs" do
     alias Ats.Jobs.Job
@@ -15,11 +101,6 @@ defmodule Ats.JobsTest do
       status: nil,
       title: nil
     }
-
-    test "list_jobs/0 returns all jobs" do
-      job = job_fixture()
-      assert Jobs.list_jobs() |> Enum.map(& &1.id) == [job.id]
-    end
 
     test "get_job!/1 returns the job with given id" do
       job = job_fixture()
